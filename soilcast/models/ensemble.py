@@ -84,13 +84,13 @@ class SoilCastModel:
         return AlignedDataFrame.from_dict(results)
 
     @classmethod
-    def load(cls, model_path: Path | str | None = None) -> "SoilCastModel":
+    def load(cls, model_path: Path | str | None = None, light: bool = False) -> "SoilCastModel":
         model_root = files("soilcast.models") if model_path is None else Path(model_path)
 
         cat_models = {}
         for response in cls.responses:
             model = CatBoostRegressor()
-            model.load_model(str(model_root.joinpath(f'{response}.cbm')))
+            model.load_model(str(model_root.joinpath(f'{response}{"_light" if light else ""}.cbm')))
             cat_models[response] = model
 
         return SoilCastModel(
@@ -100,5 +100,5 @@ class SoilCastModel:
         )
 
 
-def load_model(model_path: Path | str | None = None) -> SoilCastModel:
-    return SoilCastModel.load(model_path)
+def load_model(model_path: Path | str | None = None, light: bool = False) -> SoilCastModel:
+    return SoilCastModel.load(model_path, light=light)
